@@ -1,10 +1,11 @@
 'use client';
 
-import { useState } from 'react';
+import { useCallback, useState } from 'react';
 import { RondaRecord, Player, FinPartidaResult } from '@/lib/types';
 import NumberReveal from './NumberReveal';
 import HPBar from './HPBar';
 import Button from '@/components/ui/Button';
+import CutContainer from '@/components/ui/CutContainer';
 
 interface RoundResultOverlayProps {
   ronda: RondaRecord;
@@ -22,45 +23,33 @@ export default function RoundResultOverlay({
   onEndGame,
 }: RoundResultOverlayProps) {
   const [animDone, setAnimDone] = useState(false);
+  const handleAnimationEnd = useCallback(() => setAnimDone(true), []);
 
   return (
-    <div
-      className="fixed inset-0 flex flex-col overflow-y-auto animate-fade-in"
-      style={{ background: 'var(--color-bg-primary)' }}
-    >
-      <div className="flex-1 flex flex-col items-center justify-start py-8 px-4 gap-6 max-w-2xl mx-auto w-full">
-        {/* Header */}
-        <h2
-          className="font-display text-2xl font-bold tracking-widest"
-          style={{ color: 'var(--color-accent-gold)' }}
-        >
-          RONDA {ronda.ronda}
-        </h2>
-
-        {/* Reveal */}
-        <div
-          className="w-full p-6 rounded"
-          style={{
-            background: 'var(--color-bg-secondary)',
-            border: '1px solid var(--color-border)',
-          }}
-        >
-          <NumberReveal
-            ronda={ronda}
-            jugadores={jugadores}
-            onAnimationEnd={() => setAnimDone(true)}
-          />
+    <div className="fixed inset-0 flex flex-col overflow-y-auto bg-[var(--color-bg-primary)] animate-fade-in">
+      <div className="mx-auto flex w-full max-w-md flex-1 flex-col gap-5 px-4 py-6">
+        <div className="text-center">
+          <p className="text-[10px] tracking-[0.24em] text-neutral-500 uppercase">Resultado</p>
+          <h2 className="mt-2 font-display text-3xl font-semibold tracking-[0.18em] uppercase">
+            Ronda {ronda.ronda}
+          </h2>
         </div>
 
-        {/* HP Status */}
+        <CutContainer hoverEffect={false}>
+          <div className="px-4 py-6">
+            <NumberReveal
+              ronda={ronda}
+              jugadores={jugadores}
+              onAnimationEnd={handleAnimationEnd}
+            />
+          </div>
+        </CutContainer>
+
         {animDone && (
-          <div className="w-full animate-slide-up">
-            <h3
-              className="font-display text-xs tracking-widest mb-3"
-              style={{ color: 'var(--color-text-muted)' }}
-            >
-              ESTADO DE HP
-            </h3>
+          <div className="animate-slide-up">
+            <p className="mb-3 text-[10px] tracking-[0.18em] text-neutral-500 uppercase">
+              Estado de HP
+            </p>
             <div className="flex flex-col gap-2">
               {jugadores.map(j => {
                 const isWinner = ronda.ganadores.includes(j.id);
@@ -69,90 +58,48 @@ export default function RoundResultOverlay({
                   ronda.golpePerfecto && j.id === ronda.jugadorGolpeado;
 
                 return (
-                  <div
-                    key={j.id}
-                    className="flex items-center gap-3 px-3 py-2 rounded"
-                    style={{
-                      background: 'var(--color-bg-secondary)',
-                      border: isWinner
-                        ? '1px solid var(--color-border-strong)'
-                        : '1px solid var(--color-border)',
-                      opacity: j.eliminado ? 0.5 : 1,
-                    }}
-                  >
-                    <div className="flex-1 min-w-0">
-                      <div className="flex items-center justify-between mb-1">
-                        <span
-                          className="font-display text-sm"
-                          style={{
-                            color: isWinner
-                              ? 'var(--color-accent-gold)'
-                              : 'var(--color-text-primary)',
-                          }}
-                        >
+                  <CutContainer key={j.id} active={isWinner} hoverEffect={false}>
+                    <div className="px-4 py-3">
+                      <div className="mb-2 flex items-center justify-between gap-3">
+                        <span className={`truncate text-sm font-medium ${j.eliminado ? 'line-through text-neutral-400' : ''}`}>
                           {j.nombre}
-                          {isWinner && (
-                            <span
-                              className="ml-2 text-xs"
-                              style={{ color: 'var(--color-accent-gold)' }}
-                            >
-                              ★ GANA
-                            </span>
-                          )}
-                          {j.eliminado && (
-                            <span
-                              className="ml-2 text-xs"
-                              style={{ color: 'var(--color-world-low-text)' }}
-                            >
-                              ✗ ELIMINADO
-                            </span>
-                          )}
+                          {isWinner && <span className="ml-2 text-[10px] uppercase">gana</span>}
                         </span>
-                        <div className="flex items-center gap-2">
+                        <div className="flex shrink-0 items-center gap-2">
                           {dano && dano.cantidad > 0 && (
                             <span
                               className="font-mono-game text-xs"
-                              style={{
-                                color: isGolpeado ? '#ff6600' : 'var(--color-world-low-text)',
-                                fontWeight: isGolpeado ? 700 : 400,
-                              }}
+                              style={{ color: isGolpeado ? '#b45309' : 'var(--color-world-low-text)' }}
                             >
-                              −{dano.cantidad}
-                              {isGolpeado && ' ⚡×2'}
+                              -{dano.cantidad}{isGolpeado ? ' x2' : ''}
                             </span>
                           )}
-                          <span
-                            className="font-mono-game text-xs"
-                            style={{ color: 'var(--color-text-secondary)' }}
-                          >
+                          <span className="font-mono-game text-xs text-neutral-500">
                             {j.hp}/{j.hpMax}
                           </span>
                         </div>
                       </div>
                       <HPBar hp={j.hp} hpMax={j.hpMax} />
                     </div>
-                  </div>
+                  </CutContainer>
                 );
               })}
             </div>
           </div>
         )}
-
-        {/* Action button */}
-        {animDone && (
-          <div className="animate-slide-up">
-            {finPartida ? (
-              <Button size="lg" onClick={onEndGame}>
-                Ver resultado final →
-              </Button>
-            ) : (
-              <Button size="lg" onClick={onNextRound}>
-                Siguiente ronda →
-              </Button>
-            )}
-          </div>
-        )}
       </div>
+
+      {animDone && (
+        <footer className="border-t border-neutral-200 bg-white px-4 py-5 animate-slide-up">
+          <Button
+            size="lg"
+            className="w-full"
+            onClick={finPartida ? onEndGame : onNextRound}
+          >
+            {finPartida ? 'Ver final' : 'Siguiente ronda'}
+          </Button>
+        </footer>
+      )}
     </div>
   );
 }

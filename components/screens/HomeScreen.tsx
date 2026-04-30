@@ -1,88 +1,57 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import Button from '@/components/ui/Button';
 import { useGame } from '@/store/gameStore';
 import { getExpulsados } from '@/lib/storage';
 
 export default function HomeScreen() {
   const { navigate } = useGame();
-  const [expulsados, setExpulsados] = useState<string[]>([]);
-
-  useEffect(() => {
+  const [expulsados] = useState<string[]>(() => {
     try {
-      setExpulsados(getExpulsados());
+      return getExpulsados();
     } catch {
-      // localStorage not available
+      return [];
     }
-  }, []);
+  });
 
   return (
-    <div
-      className="flex flex-col items-center justify-center h-screen gap-8 px-6 animate-fade-in"
-      style={{ background: 'var(--color-bg-primary)' }}
-    >
-      {/* Expulsado banners */}
+    <div className="flex min-h-screen flex-col items-center justify-center gap-14 px-6 animate-fade-in">
       {expulsados.length > 0 && (
-        <div className="w-full max-w-md flex flex-col gap-2">
+        <div className="absolute top-6 flex w-full max-w-sm flex-col gap-2 px-6">
           {expulsados.map(nombre => (
             <div
               key={nombre}
-              className="px-4 py-2 text-sm font-display tracking-wider text-center"
-              style={{
-                background: 'rgba(139,0,0,0.3)',
-                border: '1px solid rgba(220,38,38,0.5)',
-                color: '#f87171',
-              }}
+              className="border border-red-200 bg-red-50 px-4 py-2 text-center text-[11px] tracking-[0.16em] text-red-700 uppercase"
             >
-              ESTADO: EXPULSADO — {nombre.toUpperCase()}
+              Expulsado - {nombre}
             </div>
           ))}
         </div>
       )}
 
-      {/* Title */}
       <div className="text-center">
-        <h1
-          className="font-display font-bold tracking-[0.3em]"
-          style={{ fontSize: 'clamp(2.5rem, 8vw, 5rem)', color: 'var(--color-accent-gold)' }}
-        >
-          THRESHOLD
+        <h1 className="font-display text-5xl font-semibold tracking-[0.22em] uppercase sm:text-6xl">
+          blacknumbers
         </h1>
-        <p
-          className="mt-3 text-lg"
-          style={{
-            color: 'var(--color-text-secondary)',
-            fontFamily: 'var(--font-crimson-pro), serif',
-            fontStyle: 'italic',
-          }}
-        >
-          ¿Cuánto sabes lo que piensan los demás?
+        <p className="mt-4 text-xs tracking-[0.26em] text-neutral-500 uppercase">
+          Alto / bajo / umbral
         </p>
       </div>
 
-      {/* Decorative line */}
-      <div
-        className="w-32"
-        style={{ height: '1px', background: 'var(--color-border-strong)' }}
-      />
+      <div className="h-px w-28 bg-neutral-300" />
 
-      {/* Actions */}
-      <div className="flex flex-col gap-4 items-center">
+      <div className="flex flex-col items-center gap-3">
         <Button size="lg" onClick={() => navigate('modeSelect')}>
           Nueva partida
         </Button>
         <Button variant="secondary" size="md" onClick={() => navigate('leaderboard')}>
-          Clasificación
+          Clasificacion
         </Button>
       </div>
 
-      {/* Footer */}
-      <p
-        className="absolute bottom-6 text-xs tracking-widest"
-        style={{ color: 'var(--color-text-muted)', fontFamily: 'var(--font-cinzel), serif' }}
-      >
-        ALTO · BAJO · UMBRAL
+      <p className="absolute bottom-6 text-[10px] tracking-[0.3em] text-neutral-400 uppercase">
+        black numbers only
       </p>
     </div>
   );

@@ -11,7 +11,7 @@ export default function HPBar({ hp, hpMax, hidden = false, className = '' }: HPB
   if (hidden) {
     return (
       <div className={`hp-bar ${className}`}>
-        <div className="h-full rounded-[5px]" style={{ background: '#333344', width: '100%' }} />
+        <div className="h-full rounded-full" style={{ background: '#d4d4d0', width: '100%' }} />
       </div>
     );
   }

@@ -19,34 +19,22 @@ export default function NumberGrid({
 
   if (confirmed) {
     return (
-      <div
-        className="flex items-center justify-center rounded gap-2 py-4"
-        style={{
-          background: 'var(--color-bg-secondary)',
-          border: '1px solid var(--color-border)',
-        }}
-      >
-        <span
-          className="font-display text-sm tracking-widest"
-          style={{ color: 'var(--color-accent-gold)' }}
-        >
-          ✓ NÚMERO ELEGIDO
+      <div className="flex items-center justify-center border border-neutral-200 bg-white py-4">
+        <span className="font-display text-xs tracking-[0.18em] uppercase">
+          Numero elegido
         </span>
       </div>
     );
   }
 
   return (
-    <div className="flex flex-wrap justify-center gap-2">
+    <div className="grid grid-cols-4 justify-items-center gap-2">
       {allNumbers.map(n => {
         const inRange = n >= rangoMin && n <= rangoMax;
         const isSelected = selected === n;
-
         let cellClass = 'number-cell';
         if (!inRange) cellClass += ' number-cell--disabled';
         else if (isSelected) cellClass += ' number-cell--selected';
-
-        const isNew = inRange && n > 10;
 
         return (
           <button
@@ -55,7 +43,7 @@ export default function NumberGrid({
             onClick={() => inRange && onSelect(n)}
             disabled={!inRange}
             aria-disabled={!inRange}
-            style={isNew ? { animation: 'escaladaUnlock 0.4s ease forwards' } : undefined}
+            style={inRange && n > 10 ? { animation: 'escaladaUnlock 0.4s ease forwards' } : undefined}
           >
             {n}
           </button>

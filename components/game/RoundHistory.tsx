@@ -10,48 +10,35 @@ interface RoundHistoryProps {
 export default function RoundHistory({ historial, jugadores }: RoundHistoryProps) {
   if (historial.length === 0) {
     return (
-      <p className="text-center text-xs py-4" style={{ color: 'var(--color-text-muted)' }}>
-        El historial aparecerá aquí al completar la primera ronda.
+      <p className="py-4 text-center text-xs text-neutral-400">
+        El historial aparecera al completar la primera ronda.
       </p>
     );
   }
 
   return (
     <div className="overflow-x-auto">
-      <table className="w-full text-xs border-collapse">
+      <table className="w-full border-collapse text-xs">
         <thead>
-          <tr style={{ borderBottom: '1px solid var(--color-border)' }}>
-            <th
-              className="py-1 px-2 text-left font-display tracking-wider"
-              style={{ color: 'var(--color-text-muted)' }}
-            >
+          <tr className="border-b border-neutral-200">
+            <th className="px-2 py-2 text-left font-display font-normal tracking-[0.14em] text-neutral-500">
               R
             </th>
             {jugadores.map(j => (
               <th
                 key={j.id}
-                className="py-1 px-2 text-center font-display tracking-wider"
-                style={{ color: 'var(--color-text-muted)' }}
+                className="px-2 py-2 text-center font-display font-normal tracking-[0.12em] text-neutral-500"
               >
                 {j.nombre.slice(0, 6)}
               </th>
             ))}
-            <th
-              className="py-1 px-2 text-center font-display tracking-wider"
-              style={{ color: 'var(--color-text-muted)' }}
-            >
+            <th className="px-2 py-2 text-center font-display font-normal tracking-[0.12em] text-neutral-500">
               Suma
             </th>
-            <th
-              className="py-1 px-2 text-center font-display tracking-wider"
-              style={{ color: 'var(--color-text-muted)' }}
-            >
+            <th className="px-2 py-2 text-center font-display font-normal tracking-[0.12em] text-neutral-500">
               Mundo
             </th>
-            <th
-              className="py-1 px-2 text-center font-display tracking-wider"
-              style={{ color: 'var(--color-text-muted)' }}
-            >
+            <th className="px-2 py-2 text-center font-display font-normal tracking-[0.12em] text-neutral-500">
               Gana
             </th>
           </tr>
@@ -64,15 +51,8 @@ export default function RoundHistory({ historial, jugadores }: RoundHistoryProps
               .join(', ');
 
             return (
-              <tr
-                key={r.ronda}
-                style={{ borderBottom: '1px solid var(--color-border)' }}
-                className="hover:bg-white/5 transition-colors"
-              >
-                <td
-                  className="py-1 px-2 font-mono-game text-center"
-                  style={{ color: 'var(--color-text-muted)' }}
-                >
+              <tr key={r.ronda} className="border-b border-neutral-200">
+                <td className="px-2 py-2 text-center font-mono-game text-neutral-500">
                   {r.ronda}
                 </td>
                 {jugadores.map(j => {
@@ -80,65 +60,31 @@ export default function RoundHistory({ historial, jugadores }: RoundHistoryProps
                   const dano = r.danos.find(d => d.jugadorId === j.id);
                   const isWinner = r.ganadores.includes(j.id);
                   return (
-                    <td key={j.id} className="py-1 px-2 text-center">
-                      <span
-                        className="font-mono-game"
-                        style={{
-                          color: isWinner
-                            ? 'var(--color-accent-gold)'
-                            : num
-                              ? 'var(--color-text-primary)'
-                              : 'var(--color-text-muted)',
-                          fontWeight: isWinner ? 700 : 400,
-                        }}
-                      >
-                        {num ? num.valor : '—'}
+                    <td key={j.id} className="px-2 py-2 text-center">
+                      <span className={`font-mono-game ${isWinner ? 'font-bold text-black' : 'text-neutral-700'}`}>
+                        {num ? num.valor : '-'}
                       </span>
                       {dano && dano.cantidad > 0 && (
-                        <span
-                          className="ml-1"
-                          style={{ color: 'var(--color-world-low-text)', fontSize: '0.65rem' }}
-                        >
-                          −{dano.cantidad}
+                        <span className="ml-1 text-[10px] text-red-700">
+                          -{dano.cantidad}
                         </span>
                       )}
                     </td>
                   );
                 })}
-                <td
-                  className="py-1 px-2 text-center font-mono-game"
-                  style={{
-                    color:
-                      r.suma === r.umbral
-                        ? 'var(--color-accent-gold)'
-                        : 'var(--color-text-secondary)',
-                  }}
-                >
+                <td className="px-2 py-2 text-center font-mono-game text-neutral-700">
                   {r.suma}
-                  {r.suma === r.umbral && ' ★'}
                 </td>
-                <td className="py-1 px-2 text-center">
-                  <span
-                    className={`world-badge ${r.mundo === 'alto' ? 'world-badge--alto' : 'world-badge--bajo'}`}
-                    style={{ fontSize: '0.6rem', padding: '2px 6px' }}
-                  >
-                    {r.mundo === 'alto' ? '↑ ALTO' : '↓ BAJO'}
+                <td className="px-2 py-2 text-center">
+                  <span className={`world-badge ${r.mundo === 'alto' ? 'world-badge--alto' : 'world-badge--bajo'}`} style={{ fontSize: '0.58rem', padding: '2px 6px' }}>
+                    {r.mundo === 'alto' ? 'ALTO' : 'BAJO'}
                   </span>
                 </td>
-                <td
-                  className="py-1 px-2 text-center font-mono-game"
-                  style={{ color: 'var(--color-accent-gold)', fontSize: '0.7rem' }}
-                >
+                <td className="px-2 py-2 text-center font-mono-game text-[11px] text-black">
                   {r.valorGanador}
-                  {r.golpePerfecto && (
-                    <span className="ml-1" title="Golpe Perfecto">
-                      ⚡
-                    </span>
-                  )}
+                  {r.golpePerfecto && <span className="ml-1">GP</span>}
                   <br />
-                  <span style={{ color: 'var(--color-text-muted)', fontSize: '0.6rem' }}>
-                    {gana}
-                  </span>
+                  <span className="text-[10px] text-neutral-400">{gana}</span>
                 </td>
               </tr>
             );

@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useRef } from 'react';
+import { useEffect, useMemo, useRef } from 'react';
 import { useGame } from '@/store/gameStore';
 import { calcularPuntosClase } from '@/lib/gameEngine';
 import { generarAnalisis } from '@/lib/analytics';
@@ -8,19 +8,24 @@ import { updatePlayers, savePartida } from '@/lib/storage';
 import HPBar from '@/components/game/HPBar';
 import RoundHistory from '@/components/game/RoundHistory';
 import Button from '@/components/ui/Button';
+import CutContainer from '@/components/ui/CutContainer';
 
 export default function GameOverScreen() {
   const { state, navigate, initGame, reset } = useGame();
   const { jugadores, historialRondas, finPartida, modo, golpePerfectoOcurrido } = state;
   const savedRef = useRef(false);
 
-  const clasificacion = finPartida?.clasificacion ?? [];
-  const ganadores = finPartida?.ganadores ?? [];
+  const clasificacion = useMemo(() => finPartida?.clasificacion ?? [], [finPartida]);
+  const ganadores = useMemo(() => finPartida?.ganadores ?? [], [finPartida]);
   const firstGanadorId = ganadores[0] ?? '';
 
-  const puntosClase = clasificacion.length > 0
-    ? calcularPuntosClase(clasificacion, jugadores, historialRondas, modo!)
-    : [];
+  const puntosClase = useMemo(
+    () =>
+      clasificacion.length > 0
+        ? calcularPuntosClase(clasificacion, jugadores, historialRondas, modo!)
+        : [],
+    [clasificacion, historialRondas, jugadores, modo]
+  );
 
   const analisis = generarAnalisis(historialRondas, jugadores, firstGanadorId);
 
@@ -59,180 +64,119 @@ export default function GameOverScreen() {
     } catch {
       // localStorage not available
     }
-  }, []);
+  }, [
+    clasificacion,
+    firstGanadorId,
+    ganadores,
+    golpePerfectoOcurrido,
+    historialRondas,
+    jugadores,
+    modo,
+    puntosClase,
+  ]);
 
   const handleRevancha = () => {
     const nombres = jugadores.map(j => j.nombre);
     initGame(nombres, modo!);
   };
 
+  const ganadorTexto =
+    ganadores.length === 0
+      ? 'Empate total'
+      : ganadores.length === 1
+        ? jugadores.find(j => j.id === firstGanadorId)?.nombre
+        : ganadores.map(id => jugadores.find(j => j.id === id)?.nombre).join(', ');
+
   return (
-    <div
-      className="min-h-screen flex flex-col items-center py-10 px-4 gap-8 animate-fade-in"
-      style={{ background: 'var(--color-bg-primary)' }}
-    >
-      <div className="w-full max-w-2xl flex flex-col gap-6">
-        {/* Title */}
+    <div className="min-h-screen bg-[var(--color-bg-primary)] px-4 py-6 animate-fade-in">
+      <div className="mx-auto flex max-w-md flex-col gap-5">
+        <header className="flex items-center justify-between">
+          <button
+            onClick={() => reset()}
+            className="font-display text-sm font-semibold tracking-[0.18em] uppercase"
+          >
+            blacknumbers
+          </button>
+          <Button variant="ghost" size="sm" onClick={() => navigate('leaderboard')}>
+            Clasificacion
+          </Button>
+        </header>
+
         <div className="text-center">
-          <h1
-            className="font-display text-3xl sm:text-4xl font-bold tracking-widest"
-            style={{ color: 'var(--color-accent-gold)' }}
-          >
-            FIN DE PARTIDA
+          <p className="text-[10px] tracking-[0.24em] text-neutral-500 uppercase">
+            Fin de partida
+          </p>
+          <h1 className="mt-2 font-display text-4xl font-semibold tracking-[0.16em] uppercase">
+            {ganadorTexto}
           </h1>
-          {ganadores.length === 0 ? (
-            <p className="mt-2" style={{ color: 'var(--color-text-secondary)' }}>
-              Empate total — nadie gana
-            </p>
-          ) : ganadores.length === 1 ? (
-            <p className="mt-2 font-display text-lg" style={{ color: 'var(--color-text-primary)' }}>
-              Ganador:{' '}
-              <span style={{ color: 'var(--color-accent-gold)' }}>
-                {jugadores.find(j => j.id === firstGanadorId)?.nombre}
-              </span>
-            </p>
-          ) : (
-            <p className="mt-2 font-display" style={{ color: 'var(--color-text-secondary)' }}>
-              Empate entre:{' '}
-              {ganadores
-                .map(id => jugadores.find(j => j.id === id)?.nombre)
-                .join(', ')}
-            </p>
-          )}
-        </div>
-
-        {/* Clasificación */}
-        <div
-          className="p-4 rounded flex flex-col gap-2"
-          style={{ background: 'var(--color-bg-secondary)', border: '1px solid var(--color-border)' }}
-        >
-          <h2
-            className="font-display text-xs tracking-widest mb-2"
-            style={{ color: 'var(--color-text-muted)' }}
-          >
-            CLASIFICACIÓN FINAL
-          </h2>
-          {clasificacion.map(c => {
-            const j = jugadores.find(x => x.id === c.jugadorId)!;
-            const pts = puntosClase.find(p => p.jugadorId === c.jugadorId)?.puntos ?? 0;
-            const isGanador = ganadores.includes(c.jugadorId);
-
-            return (
-              <div
-                key={c.jugadorId}
-                className="flex items-center gap-3 px-3 py-3 rounded"
-                style={{
-                  background: isGanador ? 'var(--color-accent-gold-dim)' : 'transparent',
-                  border: isGanador
-                    ? '1px solid var(--color-border-strong)'
-                    : '1px solid transparent',
-                  opacity: j.eliminado ? 0.6 : 1,
-                }}
-              >
-                <span
-                  className="font-mono-game text-2xl w-8 text-center"
-                  style={{
-                    color: isGanador ? 'var(--color-accent-gold)' : 'var(--color-text-muted)',
-                  }}
-                >
-                  {c.puesto}
-                </span>
-                <div className="flex-1 min-w-0">
-                  <div className="flex items-center justify-between mb-1">
-                    <span
-                      className="font-display truncate"
-                      style={{
-                        color: isGanador
-                          ? 'var(--color-accent-gold)'
-                          : 'var(--color-text-primary)',
-                        textDecoration: j.eliminado ? 'line-through' : 'none',
-                      }}
-                    >
-                      {j.nombre}
-                      {j.eliminado && (
-                        <span
-                          className="ml-2 text-xs"
-                          style={{ color: 'var(--color-text-muted)' }}
-                        >
-                          ELIMINADO
-                        </span>
-                      )}
-                    </span>
-                    <div className="flex items-center gap-3 shrink-0">
-                      <span
-                        className="font-mono-game text-xs"
-                        style={{
-                          color: pts >= 0 ? 'var(--color-world-high-text)' : '#f87171',
-                        }}
-                      >
-                        {pts >= 0 ? `+${pts}` : pts} PC
-                      </span>
-                      <span
-                        className="font-mono-game text-sm"
-                        style={{ color: 'var(--color-text-secondary)' }}
-                      >
-                        {c.hp} HP
-                      </span>
-                    </div>
-                  </div>
-                  <HPBar hp={c.hp} hpMax={j.hpMax} />
-                </div>
-              </div>
-            );
-          })}
-        </div>
-
-        {/* Analysis */}
-        <div
-          className="p-4 rounded"
-          style={{
-            background: 'var(--color-bg-secondary)',
-            border: '1px solid var(--color-border)',
-            borderLeft: '3px solid var(--color-accent-gold)',
-          }}
-        >
-          <h2
-            className="font-display text-xs tracking-widest mb-2"
-            style={{ color: 'var(--color-text-muted)' }}
-          >
-            ANÁLISIS PSICOLÓGICO
-          </h2>
-          <p
-            className="text-base leading-relaxed"
-            style={{
-              color: 'var(--color-text-secondary)',
-              fontFamily: 'var(--font-crimson-pro), serif',
-              fontStyle: 'italic',
-            }}
-          >
-            {analisis}
+          <p className="mt-3 text-sm text-neutral-500">
+            {ganadores.length > 1 ? 'Empate en primera posicion' : 'Resultado final'}
           </p>
         </div>
 
-        {/* Round history */}
-        <div
-          className="p-4 rounded"
-          style={{ background: 'var(--color-bg-secondary)', border: '1px solid var(--color-border)' }}
-        >
-          <h2
-            className="font-display text-xs tracking-widest mb-3"
-            style={{ color: 'var(--color-text-muted)' }}
-          >
-            HISTORIAL COMPLETO
-          </h2>
-          <RoundHistory historial={historialRondas} jugadores={jugadores} />
-        </div>
+        <section>
+          <p className="mb-3 text-[10px] tracking-[0.18em] text-neutral-500 uppercase">
+            Clasificacion final
+          </p>
+          <div className="flex flex-col gap-2">
+            {clasificacion.map(c => {
+              const j = jugadores.find(x => x.id === c.jugadorId)!;
+              const pts = puntosClase.find(p => p.jugadorId === c.jugadorId)?.puntos ?? 0;
+              const isGanador = ganadores.includes(c.jugadorId);
 
-        {/* Actions */}
-        <div className="flex gap-3 flex-wrap justify-center">
-          <Button size="md" onClick={handleRevancha}>
+              return (
+                <CutContainer key={c.jugadorId} active={isGanador} hoverEffect={false}>
+                  <div className="px-4 py-3">
+                    <div className="mb-2 flex items-center gap-3">
+                      <span className="w-7 text-center font-mono-game text-xl">
+                        {c.puesto}
+                      </span>
+                      <div className="min-w-0 flex-1">
+                        <p className={`truncate text-sm font-medium ${j.eliminado ? 'line-through text-neutral-400' : ''}`}>
+                          {j.nombre}
+                        </p>
+                        <HPBar hp={c.hp} hpMax={j.hpMax} className="mt-2" />
+                      </div>
+                      <div className="shrink-0 text-right">
+                        <p className={`font-mono-game text-xs ${pts >= 0 ? 'text-black' : 'text-red-700'}`}>
+                          {pts >= 0 ? `+${pts}` : pts} PC
+                        </p>
+                        <p className="mt-1 font-mono-game text-xs text-neutral-500">
+                          {c.hp} HP
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+                </CutContainer>
+              );
+            })}
+          </div>
+        </section>
+
+        <CutContainer hoverEffect={false}>
+          <div className="px-4 py-4">
+            <p className="mb-2 text-[10px] tracking-[0.18em] text-neutral-500 uppercase">
+              Analisis
+            </p>
+            <p className="text-sm leading-relaxed text-neutral-600">{analisis}</p>
+          </div>
+        </CutContainer>
+
+        <CutContainer hoverEffect={false}>
+          <div className="px-4 py-4">
+            <p className="mb-3 text-[10px] tracking-[0.18em] text-neutral-500 uppercase">
+              Historial completo
+            </p>
+            <RoundHistory historial={historialRondas} jugadores={jugadores} />
+          </div>
+        </CutContainer>
+
+        <div className="flex flex-col gap-3 pb-4">
+          <Button size="lg" onClick={handleRevancha}>
             Revancha
           </Button>
-          <Button variant="secondary" size="md" onClick={() => { reset(); }}>
-            Menú principal
-          </Button>
-          <Button variant="secondary" size="md" onClick={() => navigate('leaderboard')}>
-            Clasificación
+          <Button variant="secondary" size="md" onClick={() => reset()}>
+            Menu principal
           </Button>
         </div>
       </div>

@@ -6,12 +6,12 @@ export function generarAnalisis(
   ganadorId: string
 ): string {
   if (historial.length === 0) {
-    return 'El historial habla. La próxima vez, todos sabrán un poco más sobre cómo piensa cada uno.';
+    return 'El historial habla. La proxima vez, todos sabran un poco mas sobre como piensa cada uno.';
   }
 
   const ganador = jugadores.find(j => j.id === ganadorId);
   if (!ganador) {
-    return 'El historial habla. La próxima vez, todos sabrán un poco más sobre cómo piensa cada uno.';
+    return 'El historial habla. La proxima vez, todos sabran un poco mas sobre como piensa cada uno.';
   }
 
   const nombre = ganador.nombre;
@@ -23,33 +23,31 @@ export function generarAnalisis(
     acc[n] = (acc[n] ?? 0) + 1;
     return acc;
   }, {});
+
   if (Object.values(frecuencias).some(c => c >= 3)) {
-    return `${nombre} mostró un patrón claro. La próxima partida, cualquiera que lo recuerde puede explotarlo.`;
+    return `${nombre} mostro un patron claro. La proxima partida, cualquiera que lo recuerde puede explotarlo.`;
   }
 
   const cincos = numerosGanador.filter(n => n === 5).length;
   if (cincos > historial.length / 2) {
-    return `${nombre} eligió la defensa perfecta. Nunca intentó ganar de verdad — solo sobrevivir.`;
+    return `${nombre} eligio la defensa perfecta. No intento ganar de verdad: solo sobrevivir.`;
   }
 
   const ejecutoPerfecto = historial.some(
     r => r.golpePerfecto && r.ganadores.includes(ganadorId)
   );
   if (ejecutoPerfecto) {
-    return `${nombre} leyó el momento exacto. El 1 y el 10 en la misma mesa es la apuesta más extrema — y funcionó.`;
+    return `${nombre} leyo el momento exacto. El 1 y el 10 en la misma mesa es la apuesta mas extrema, y funciono.`;
   }
 
   const intento1 = numerosGanador.some(n => n === 1);
-  const perfectosEjecutados = historial.filter(
-    r => r.golpePerfecto && r.ganadores.includes(ganadorId)
-  ).length;
-  if (intento1 && perfectosEjecutados === 0) {
-    return `${nombre} apostó por el Golpe Perfecto y falló. El riesgo tiene un precio.`;
+  if (intento1) {
+    return `${nombre} aposto por el Golpe Perfecto y asumio el riesgo.`;
   }
 
   const umbralExacto = historial.some(r => r.suma === r.umbral);
   if (umbralExacto) {
-    return `Una ronda tocó el límite exacto del umbral. La tensión no pudo ser mayor.`;
+    return 'Una ronda toco el limite exacto del umbral. La mesa estuvo al filo.';
   }
 
   const totalDano = historial.reduce((sum, r) => {
@@ -57,8 +55,8 @@ export function generarAnalisis(
     return sum + (d?.cantidad ?? 0);
   }, 0);
   if (totalDano === 0 && !ganador.eliminado) {
-    return `${nombre} leyó cada ronda sin cometer un solo error. Eso no es suerte.`;
+    return `${nombre} leyo cada ronda sin cometer un solo error. Eso no es suerte.`;
   }
 
-  return 'El historial habla. La próxima vez, todos sabrán un poco más sobre cómo piensa cada uno.';
+  return 'El historial habla. La proxima vez, todos sabran un poco mas sobre como piensa cada uno.';
 }

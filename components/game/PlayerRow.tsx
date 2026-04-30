@@ -21,8 +21,6 @@ export default function PlayerRow({
   isActive = false,
   compact = false,
 }: PlayerRowProps) {
-  const pct = hpMax > 0 ? Math.round((hp / hpMax) * 100) : 0;
-
   return (
     <div
       className={`flex items-center gap-3 px-3 py-2 rounded transition-all ${

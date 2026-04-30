@@ -6,8 +6,6 @@ import {
   GameScreen,
   GameMode,
   Player,
-  HotSeatPhase,
-  FinPartidaResult,
 } from '@/lib/types';
 import {
   calcularRondaConfig,
