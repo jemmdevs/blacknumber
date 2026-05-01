@@ -6,14 +6,15 @@ import NumberGrid from '@/components/game/NumberGrid';
 import RoundHistory from '@/components/game/RoundHistory';
 import HPBar from '@/components/game/HPBar';
 import Button from '@/components/ui/Button';
-import Modal from '@/components/ui/Modal';
 import CutContainer from '@/components/ui/CutContainer';
+import { GameMode } from '@/lib/types';
+
+const modeLabel: Record<GameMode, string> = { clasico: 'Classic', escalada: 'Escalation' };
 
 export default function DuelScreen() {
-  const { state, confirmSelection, navigate } = useGame();
+  const { state, confirmSelection } = useGame();
   const [selectedNumber, setSelectedNumber] = useState<number | null>(null);
   const [confirmed, setConfirmed] = useState(false);
-  const [showAbandon, setShowAbandon] = useState(false);
 
   const hotSeatPhase = state.hotSeatPhase;
   if (!hotSeatPhase || hotSeatPhase.type !== 'selecting') return null;
@@ -37,14 +38,11 @@ export default function DuelScreen() {
     <div className="flex h-screen flex-col bg-[var(--color-bg-primary)] animate-fade-in">
       <header className="shrink-0 border-b border-neutral-200 bg-white px-4 py-3">
         <div className="flex items-center justify-between">
-          <button
-            onClick={() => setShowAbandon(true)}
-            className="font-display text-sm font-semibold tracking-[0.18em] uppercase"
-          >
+          <span className="font-display text-sm font-semibold tracking-[0.18em] uppercase">
             blacknumbers
-          </button>
+          </span>
           <span className="text-[10px] tracking-[0.18em] text-neutral-500 uppercase">
-            R{rondaActual}/{totalRondas} / {modo}
+            R{rondaActual}/{totalRondas} / {modeLabel[modo!]}
           </span>
         </div>
         <div className="mt-3 flex gap-2 overflow-x-auto">
@@ -56,7 +54,6 @@ export default function DuelScreen() {
               <p className={`truncate text-xs ${r.eliminado ? 'line-through text-neutral-400' : 'text-neutral-700'}`}>
                 {r.nombre}
               </p>
-              <p className="mt-1 font-mono-game text-[10px] text-neutral-400">HP: ???</p>
             </div>
           ))}
         </div>
@@ -66,11 +63,11 @@ export default function DuelScreen() {
         <div className="mx-auto flex max-w-md flex-col gap-5">
           <div className="text-center">
             <p className="text-[10px] tracking-[0.22em] text-neutral-500 uppercase">
-              Umbral {rondaConfig.umbral}
+              Threshold {rondaConfig.umbral}
             </p>
             {modo === 'escalada' && (
               <p className="mt-1 text-xs text-neutral-500">
-                Rango {rondaConfig.rangoMin}-{rondaConfig.rangoMax}
+                Range {rondaConfig.rangoMin}–{rondaConfig.rangoMax}
               </p>
             )}
           </div>
@@ -86,7 +83,7 @@ export default function DuelScreen() {
           <CutContainer hoverEffect={false}>
             <div className="px-4 py-4">
               <p className="mb-3 text-center text-[10px] tracking-[0.18em] text-neutral-500 uppercase">
-                Numeros elegidos
+                Chosen numbers
               </p>
               <div className="flex justify-center gap-2">
                 {Array.from({ length: activeCount }).map((_, i) => (
@@ -104,7 +101,7 @@ export default function DuelScreen() {
           <CutContainer hoverEffect={false}>
             <div className="px-4 py-4">
               <p className="mb-3 text-[10px] tracking-[0.18em] text-neutral-500 uppercase">
-                Historial
+                History
               </p>
               <RoundHistory historial={historialRondas} jugadores={jugadores} />
             </div>
@@ -125,43 +122,19 @@ export default function DuelScreen() {
           </span>
         </div>
 
-        <div className="flex gap-3">
-          <Button variant="secondary" size="md" onClick={() => setShowAbandon(true)}>
-            Pausa
-          </Button>
-          <Button
-            size="md"
-            className="flex-1"
-            disabled={selectedNumber === null || confirmed}
-            onClick={handleConfirm}
-          >
-            {confirmed
-              ? 'Confirmado'
-              : selectedNumber === null
-                ? 'Elige numero'
-                : `Confirmar ${selectedNumber}`}
-          </Button>
-        </div>
+        <Button
+          size="md"
+          className="w-full"
+          disabled={selectedNumber === null || confirmed}
+          onClick={handleConfirm}
+        >
+          {confirmed
+            ? 'Confirmed'
+            : selectedNumber === null
+              ? 'Pick a number'
+              : `Confirm ${selectedNumber}`}
+        </Button>
       </footer>
-
-      <Modal open={showAbandon} onClose={() => setShowAbandon(false)}>
-        <div className="flex flex-col gap-4 p-6">
-          <h3 className="font-display text-lg font-semibold tracking-[0.12em] uppercase">
-            Abandonar partida
-          </h3>
-          <p className="text-sm leading-relaxed text-neutral-500">
-            La partida no se guardara. No se otorgaran puntos.
-          </p>
-          <div className="flex flex-col gap-3">
-            <Button variant="secondary" onClick={() => setShowAbandon(false)}>
-              Seguir jugando
-            </Button>
-            <Button variant="danger" onClick={() => navigate('home')}>
-              Abandonar
-            </Button>
-          </div>
-        </div>
-      </Modal>
     </div>
   );
 }

@@ -5,7 +5,6 @@ import HomeScreen from '@/components/screens/HomeScreen';
 import ModeSelectScreen from '@/components/screens/ModeSelectScreen';
 import DuelScreen from '@/components/screens/DuelScreen';
 import GameOverScreen from '@/components/screens/GameOverScreen';
-import LeaderboardScreen from '@/components/screens/LeaderboardScreen';
 import HotSeatTransition from '@/components/game/HotSeatTransition';
 import RoundResultOverlay from '@/components/game/RoundResultOverlay';
 
@@ -47,7 +46,6 @@ function GameRoot() {
 
   if (screen === 'modeSelect') return <ModeSelectScreen />;
   if (screen === 'gameOver') return <GameOverScreen />;
-  if (screen === 'leaderboard') return <LeaderboardScreen />;
 
   return <HomeScreen />;
 }

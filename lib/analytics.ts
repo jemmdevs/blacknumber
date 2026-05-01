@@ -6,12 +6,12 @@ export function generarAnalisis(
   ganadorId: string
 ): string {
   if (historial.length === 0) {
-    return 'El historial habla. La proxima vez, todos sabran un poco mas sobre como piensa cada uno.';
+    return 'The history speaks. Next time, everyone will know a little more about how each player thinks.';
   }
 
   const ganador = jugadores.find(j => j.id === ganadorId);
   if (!ganador) {
-    return 'El historial habla. La proxima vez, todos sabran un poco mas sobre como piensa cada uno.';
+    return 'The history speaks. Next time, everyone will know a little more about how each player thinks.';
   }
 
   const nombre = ganador.nombre;
@@ -25,29 +25,29 @@ export function generarAnalisis(
   }, {});
 
   if (Object.values(frecuencias).some(c => c >= 3)) {
-    return `${nombre} mostro un patron claro. La proxima partida, cualquiera que lo recuerde puede explotarlo.`;
+    return `${nombre} showed a clear pattern. Next game, anyone who remembers can exploit it.`;
   }
 
   const cincos = numerosGanador.filter(n => n === 5).length;
   if (cincos > historial.length / 2) {
-    return `${nombre} eligio la defensa perfecta. No intento ganar de verdad: solo sobrevivir.`;
+    return `${nombre} chose perfect defense. Not really trying to win — just survive.`;
   }
 
   const ejecutoPerfecto = historial.some(
     r => r.golpePerfecto && r.ganadores.includes(ganadorId)
   );
   if (ejecutoPerfecto) {
-    return `${nombre} leyo el momento exacto. El 1 y el 10 en la misma mesa es la apuesta mas extrema, y funciono.`;
+    return `${nombre} read the exact moment. A 1 and a 10 at the same table is the most extreme bet — and it worked.`;
   }
 
   const intento1 = numerosGanador.some(n => n === 1);
   if (intento1) {
-    return `${nombre} aposto por el Golpe Perfecto y asumio el riesgo.`;
+    return `${nombre} went for the Perfect Strike and took the risk.`;
   }
 
   const umbralExacto = historial.some(r => r.suma === r.umbral);
   if (umbralExacto) {
-    return 'Una ronda toco el limite exacto del umbral. La mesa estuvo al filo.';
+    return 'One round landed exactly on the threshold. The table was on the edge.';
   }
 
   const totalDano = historial.reduce((sum, r) => {
@@ -55,8 +55,8 @@ export function generarAnalisis(
     return sum + (d?.cantidad ?? 0);
   }, 0);
   if (totalDano === 0 && !ganador.eliminado) {
-    return `${nombre} leyo cada ronda sin cometer un solo error. Eso no es suerte.`;
+    return `${nombre} read every round without a single mistake. That is not luck.`;
   }
 
-  return 'El historial habla. La proxima vez, todos sabran un poco mas sobre como piensa cada uno.';
+  return 'The history speaks. Next time, everyone will know a little more about how each player thinks.';
 }

@@ -11,7 +11,7 @@ import Button from '@/components/ui/Button';
 import CutContainer from '@/components/ui/CutContainer';
 
 export default function GameOverScreen() {
-  const { state, navigate, initGame, reset } = useGame();
+  const { state, initGame, reset } = useGame();
   const { jugadores, historialRondas, finPartida, modo, golpePerfectoOcurrido } = state;
   const savedRef = useRef(false);
 
@@ -34,7 +34,7 @@ export default function GameOverScreen() {
     savedRef.current = true;
 
     const ganadorNombre =
-      jugadores.find(j => j.id === firstGanadorId)?.nombre ?? 'Empate';
+      jugadores.find(j => j.id === firstGanadorId)?.nombre ?? 'Tie';
 
     const puntosUpdates = puntosClase.map(p => {
       const j = jugadores.find(x => x.id === p.jugadorId)!;
@@ -82,7 +82,7 @@ export default function GameOverScreen() {
 
   const ganadorTexto =
     ganadores.length === 0
-      ? 'Empate total'
+      ? 'Total tie'
       : ganadores.length === 1
         ? jugadores.find(j => j.id === firstGanadorId)?.nombre
         : ganadores.map(id => jugadores.find(j => j.id === id)?.nombre).join(', ');
@@ -97,26 +97,23 @@ export default function GameOverScreen() {
           >
             blacknumbers
           </button>
-          <Button variant="ghost" size="sm" onClick={() => navigate('leaderboard')}>
-            Clasificacion
-          </Button>
         </header>
 
         <div className="text-center">
           <p className="text-[10px] tracking-[0.24em] text-neutral-500 uppercase">
-            Fin de partida
+            Game Over
           </p>
           <h1 className="mt-2 font-display text-4xl font-semibold tracking-[0.16em] uppercase">
             {ganadorTexto}
           </h1>
           <p className="mt-3 text-sm text-neutral-500">
-            {ganadores.length > 1 ? 'Empate en primera posicion' : 'Resultado final'}
+            {ganadores.length > 1 ? 'Tie for first place' : 'Final result'}
           </p>
         </div>
 
         <section>
           <p className="mb-3 text-[10px] tracking-[0.18em] text-neutral-500 uppercase">
-            Clasificacion final
+            Final standings
           </p>
           <div className="flex flex-col gap-2">
             {clasificacion.map(c => {
@@ -139,7 +136,7 @@ export default function GameOverScreen() {
                       </div>
                       <div className="shrink-0 text-right">
                         <p className={`font-mono-game text-xs ${pts >= 0 ? 'text-black' : 'text-red-700'}`}>
-                          {pts >= 0 ? `+${pts}` : pts} PC
+                          {pts >= 0 ? `+${pts}` : pts} CP
                         </p>
                         <p className="mt-1 font-mono-game text-xs text-neutral-500">
                           {c.hp} HP
@@ -156,7 +153,7 @@ export default function GameOverScreen() {
         <CutContainer hoverEffect={false}>
           <div className="px-4 py-4">
             <p className="mb-2 text-[10px] tracking-[0.18em] text-neutral-500 uppercase">
-              Analisis
+              Analysis
             </p>
             <p className="text-sm leading-relaxed text-neutral-600">{analisis}</p>
           </div>
@@ -165,7 +162,7 @@ export default function GameOverScreen() {
         <CutContainer hoverEffect={false}>
           <div className="px-4 py-4">
             <p className="mb-3 text-[10px] tracking-[0.18em] text-neutral-500 uppercase">
-              Historial completo
+              Full history
             </p>
             <RoundHistory historial={historialRondas} jugadores={jugadores} />
           </div>
@@ -173,10 +170,10 @@ export default function GameOverScreen() {
 
         <div className="flex flex-col gap-3 pb-4">
           <Button size="lg" onClick={handleRevancha}>
-            Revancha
+            Rematch
           </Button>
           <Button variant="secondary" size="md" onClick={() => reset()}>
-            Menu principal
+            Main menu
           </Button>
         </div>
       </div>

@@ -11,7 +11,7 @@ export default function RoundHistory({ historial, jugadores }: RoundHistoryProps
   if (historial.length === 0) {
     return (
       <p className="py-4 text-center text-xs text-neutral-400">
-        El historial aparecera al completar la primera ronda.
+        History will appear after the first round.
       </p>
     );
   }
@@ -33,13 +33,13 @@ export default function RoundHistory({ historial, jugadores }: RoundHistoryProps
               </th>
             ))}
             <th className="px-2 py-2 text-center font-display font-normal tracking-[0.12em] text-neutral-500">
-              Suma
+              Sum
             </th>
             <th className="px-2 py-2 text-center font-display font-normal tracking-[0.12em] text-neutral-500">
-              Mundo
+              World
             </th>
             <th className="px-2 py-2 text-center font-display font-normal tracking-[0.12em] text-neutral-500">
-              Gana
+              Wins
             </th>
           </tr>
         </thead>
@@ -77,12 +77,12 @@ export default function RoundHistory({ historial, jugadores }: RoundHistoryProps
                 </td>
                 <td className="px-2 py-2 text-center">
                   <span className={`world-badge ${r.mundo === 'alto' ? 'world-badge--alto' : 'world-badge--bajo'}`} style={{ fontSize: '0.58rem', padding: '2px 6px' }}>
-                    {r.mundo === 'alto' ? 'ALTO' : 'BAJO'}
+                    {r.mundo === 'alto' ? 'HIGH' : 'LOW'}
                   </span>
                 </td>
                 <td className="px-2 py-2 text-center font-mono-game text-[11px] text-black">
                   {r.valorGanador}
-                  {r.golpePerfecto && <span className="ml-1">GP</span>}
+                  {r.golpePerfecto && <span className="ml-1">PS</span>}
                   <br />
                   <span className="text-[10px] text-neutral-400">{gana}</span>
                 </td>

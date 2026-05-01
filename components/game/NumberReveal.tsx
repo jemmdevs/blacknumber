@@ -157,7 +157,7 @@ export default function NumberReveal({ ronda, jugadores, onAnimationEnd }: Numbe
               className="world-badge animate-fade-in"
               style={{ background: worldBg, color: worldColor }}
             >
-              {isAlto ? 'ALTO gana' : 'BAJO gana'}
+              {isAlto ? 'HIGH wins' : 'LOW wins'}
             </div>
           )}
         </div>
@@ -166,10 +166,10 @@ export default function NumberReveal({ ronda, jugadores, onAnimationEnd }: Numbe
       {ronda.golpePerfecto && phase === 'winner' && (
         <div className="border border-neutral-900 bg-white px-5 py-3 text-center animate-scale-in">
           <div className="font-display text-base font-semibold tracking-[0.16em] uppercase">
-            Golpe perfecto
+            Perfect Strike
           </div>
           <div className="mt-1 text-xs text-neutral-500">
-            El jugador del 10 recibe doble dano
+            The player with 10 takes double damage
           </div>
         </div>
       )}

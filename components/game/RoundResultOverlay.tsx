@@ -29,9 +29,9 @@ export default function RoundResultOverlay({
     <div className="fixed inset-0 flex flex-col overflow-y-auto bg-[var(--color-bg-primary)] animate-fade-in">
       <div className="mx-auto flex w-full max-w-md flex-1 flex-col gap-5 px-4 py-6">
         <div className="text-center">
-          <p className="text-[10px] tracking-[0.24em] text-neutral-500 uppercase">Resultado</p>
+          <p className="text-[10px] tracking-[0.24em] text-neutral-500 uppercase">Result</p>
           <h2 className="mt-2 font-display text-3xl font-semibold tracking-[0.18em] uppercase">
-            Ronda {ronda.ronda}
+            Round {ronda.ronda}
           </h2>
         </div>
 
@@ -48,7 +48,7 @@ export default function RoundResultOverlay({
         {animDone && (
           <div className="animate-slide-up">
             <p className="mb-3 text-[10px] tracking-[0.18em] text-neutral-500 uppercase">
-              Estado de HP
+              HP Status
             </p>
             <div className="flex flex-col gap-2">
               {jugadores.map(j => {
@@ -63,7 +63,7 @@ export default function RoundResultOverlay({
                       <div className="mb-2 flex items-center justify-between gap-3">
                         <span className={`truncate text-sm font-medium ${j.eliminado ? 'line-through text-neutral-400' : ''}`}>
                           {j.nombre}
-                          {isWinner && <span className="ml-2 text-[10px] uppercase">gana</span>}
+                          {isWinner && <span className="ml-2 text-[10px] uppercase">wins</span>}
                         </span>
                         <div className="flex shrink-0 items-center gap-2">
                           {dano && dano.cantidad > 0 && (
@@ -71,7 +71,7 @@ export default function RoundResultOverlay({
                               className="font-mono-game text-xs"
                               style={{ color: isGolpeado ? '#b45309' : 'var(--color-world-low-text)' }}
                             >
-                              -{dano.cantidad}{isGolpeado ? ' x2' : ''}
+                              -{dano.cantidad}{isGolpeado ? ' ×2' : ''}
                             </span>
                           )}
                           <span className="font-mono-game text-xs text-neutral-500">
@@ -96,7 +96,7 @@ export default function RoundResultOverlay({
             className="w-full"
             onClick={finPartida ? onEndGame : onNextRound}
           >
-            {finPartida ? 'Ver final' : 'Siguiente ronda'}
+            {finPartida ? 'View results' : 'Next round'}
           </Button>
         </footer>
       )}
